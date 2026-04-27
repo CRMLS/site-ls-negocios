@@ -1,0 +1,26 @@
+name: Deploy Site LS Negócios
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Deploy no VPS via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 2.24.212.21
+          username: root
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /opt/ls/production
+            git pull origin main
+            docker compose build ls-site
+            docker compose up -d ls-site
+            echo "✅ Deploy concluído!"

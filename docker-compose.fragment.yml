@@ -1,0 +1,20 @@
+# Adicionar este bloco ao docker-compose.yml existente no VPS
+# em /opt/ls/production/docker-compose.yml
+
+  ls-site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    container_name: ls-site
+    restart: unless-stopped
+    networks:
+      - ls_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ls-site.rule=Host(`lsnegocio.com.br`) || Host(`www.lsnegocio.com.br`)"
+      - "traefik.http.routers.ls-site.entrypoints=websecure"
+      - "traefik.http.routers.ls-site.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ls-site.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.redirect-www.redirectregex.regex=^https://www\\.lsnegocio\\.com\\.br/(.*)"
+      - "traefik.http.middlewares.redirect-www.redirectregex.replacement=https://lsnegocio.com.br/$${1}"
+      - "traefik.http.routers.ls-site.middlewares=redirect-www"

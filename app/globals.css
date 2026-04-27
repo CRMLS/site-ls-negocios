@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ls-dark: #111A21;
+  --ls-deep: #090e12;
+  --ls-beige: #E4DBD3;
+  --whatsapp: #25d366;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ls-deep); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ls-beige); }
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scrollTrack {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(228, 219, 211, 0.15); }
+  50% { border-color: rgba(228, 219, 211, 0.4); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease forwards;
+}
+
+.animate-scroll-track {
+  animation: scrollTrack 35s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card hover */
+.solution-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.solution-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(228, 219, 211, 0.5) !important;
+}
+
+/* Nav link underline */
+.nav-link::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 1px;
+  background: var(--ls-beige);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Number counter */
+.counter-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Form input focus */
+.ls-input:focus {
+  outline: none;
+  border-color: rgba(228, 219, 211, 0.6);
+  box-shadow: 0 0 0 3px rgba(228, 219, 211, 0.08);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #E4DBD3 0%, #fff 50%, #E4DBD3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section divider */
+.section-divider {
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ls-beige), transparent);
+}
