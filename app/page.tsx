@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Cursor from '@/components/Cursor'
+import Particles from '@/components/Particles'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
@@ -7,18 +9,15 @@ import Partners from '@/components/Partners'
 import Solutions from '@/components/Solutions'
 import Team from '@/components/Team'
 import Contact from '@/components/Contact'
-import Footer from '@/components/Footer'
-import Modal from '@/components/Modal'
-import WhatsAppFloat from '@/components/WhatsAppFloat'
+import { Modal, WhatsAppFloat, Footer } from '@/components/UI'
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
 
-  // Scroll reveal
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible')
           }
@@ -26,19 +25,23 @@ export default function Home() {
       },
       { threshold: 0.1 }
     )
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el))
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
     return () => observer.disconnect()
   }, [])
 
   return (
     <>
+      <Cursor />
+      <Particles />
       <Navbar onOpenModal={() => setModalOpen(true)} />
-      <Hero onOpenModal={() => setModalOpen(true)} />
-      <Stats />
-      <Partners />
-      <Solutions />
-      <Team />
-      <Contact />
+      <main>
+        <Hero onOpenModal={() => setModalOpen(true)} />
+        <Stats />
+        <Partners />
+        <Solutions />
+        <Team />
+        <Contact />
+      </main>
       <Footer />
       <WhatsAppFloat onClick={() => setModalOpen(true)} />
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} />

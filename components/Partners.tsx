@@ -1,35 +1,37 @@
 const partners = [
-  { name: 'Somapay', url: 'https://logodownload.org/wp-content/uploads/2019/06/somapay-logo.png' },
+  { name: 'Somapay', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png' },
   { name: 'Itaú', url: 'https://logodownload.org/wp-content/uploads/2014/05/itau-logo-7.png' },
   { name: 'Porto Seguro', url: 'https://logodownload.org/wp-content/uploads/2018/01/porto-seguro-logo.png' },
-  { name: 'Rodobens', url: 'https://logodownload.org/wp-content/uploads/2018/05/rodobens-logo.png' },
   { name: 'Creditas', url: 'https://logodownload.org/wp-content/uploads/2019/07/creditas-logo.png' },
   { name: 'Safra', url: 'https://logodownload.org/wp-content/uploads/2014/09/banco-safra-logo.png' },
-  { name: 'BV', url: 'https://logodownload.org/wp-content/uploads/2020/11/banco-bv-logo.png' },
   { name: 'Santander', url: 'https://logodownload.org/wp-content/uploads/2016/09/santander-logo-4.png' },
 ]
 
 export default function Partners() {
-  const doubled = [...partners, ...partners]
+  const doubled = [...partners, ...partners, ...partners]
 
   return (
-    <div className="bg-white py-8 border-b-2 border-ls-beige overflow-hidden">
-      <div className="relative">
+    <section style={{ position: 'relative', zIndex: 2, padding: '60px 0', borderTop: '1px solid rgba(74,158,255,0.06)', borderBottom: '1px solid rgba(74,158,255,0.06)' }}>
+      <div style={{ overflow: 'hidden', position: 'relative' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(to right, #04070f, transparent)', zIndex: 1, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(to left, #04070f, transparent)', zIndex: 1, pointerEvents: 'none' }} />
         <div
-          className="flex animate-scroll-track"
-          style={{ width: `${doubled.length * 200}px` }}
+          className="animate-scroll-track"
+          style={{ display: 'flex', width: `${doubled.length * 200}px` }}
         >
           {doubled.map((p, i) => (
-            <div key={i} className="flex items-center justify-center px-8" style={{ width: 200 }}>
+            <div key={i} style={{ width: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 32px' }}>
               <img
                 src={p.url}
                 alt={p.name}
-                className="h-8 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                style={{ height: 28, width: 'auto', objectFit: 'contain', filter: 'grayscale(100%) brightness(0.4)', transition: 'filter 0.3s' }}
+                onMouseEnter={e => (e.currentTarget.style.filter = 'grayscale(0%) brightness(0.9)')}
+                onMouseLeave={e => (e.currentTarget.style.filter = 'grayscale(100%) brightness(0.4)')}
               />
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }

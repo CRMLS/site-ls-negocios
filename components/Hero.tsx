@@ -4,99 +4,112 @@ import { useEffect, useState } from 'react'
 const words = ['Financeira', 'Estratégica', 'Empresarial', 'Inovadora']
 
 export default function Hero({ onOpenModal }: { onOpenModal: () => void }) {
-  const [wordIndex, setWordIndex] = useState(0)
-  const [visible, setVisible] = useState(true)
+  const [displayed, setDisplayed] = useState('')
+  const [wordIdx, setWordIdx] = useState(0)
+  const [deleting, setDeleting] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(false)
-      setTimeout(() => {
-        setWordIndex(i => (i + 1) % words.length)
-        setVisible(true)
-      }, 400)
-    }, 2800)
-    return () => clearInterval(interval)
-  }, [])
+    const word = words[wordIdx]
+    const speed = deleting ? 45 : 85
+
+    const timer = setTimeout(() => {
+      if (!deleting) {
+        const next = word.slice(0, displayed.length + 1)
+        setDisplayed(next)
+        if (next === word) setTimeout(() => setDeleting(true), 1800)
+      } else {
+        const next = word.slice(0, displayed.length - 1)
+        setDisplayed(next)
+        if (next === '') {
+          setDeleting(false)
+          setWordIdx(i => (i + 1) % words.length)
+        }
+      }
+    }, speed)
+
+    return () => clearTimeout(timer)
+  }, [displayed, deleting, wordIdx])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center grid-bg" style={{ zIndex: 2 }}>
 
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2000')`,
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-ls-dark/90 via-ls-dark/75 to-ls-dark" />
+      {/* Glow orb */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(74,158,255,0.04) 0%, transparent 70%)' }} />
 
-      {/* Decorative lines */}
-      <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-ls-beige/20 to-transparent hidden lg:block" style={{left: '8%'}} />
-      <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-ls-beige/20 to-transparent hidden lg:block" style={{right: '8%'}} />
+      <div className="max-w-7xl mx-auto px-6 md:px-10 pt-32 pb-20 w-full">
+        <div className="max-w-4xl">
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        <div
-          className="inline-flex items-center gap-2 border border-ls-beige/20 px-4 py-2 text-xs uppercase tracking-[4px] text-ls-beige/60 mb-10 animate-fade-in"
-          style={{ animationDelay: '0.2s', opacity: 0, animationFillMode: 'forwards' }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-ls-beige/60 animate-pulse-slow"></span>
-          Mossoró · RN · Brasil
+          {/* Badge */}
+          <div
+            className={`inline-flex items-center gap-3 mb-10 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            style={{ border: '1px solid rgba(74,158,255,0.18)', padding: '7px 16px', fontSize: 10, letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(74,158,255,0.7)', transitionDelay: '0.1s' }}
+          >
+            <span className="pulse-dot" />
+            Hub Financeiro · Mossoró · RN · Brasil
+          </div>
+
+          {/* Headline */}
+          <h1
+            className={`mb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 'clamp(40px, 7vw, 80px)', lineHeight: 1.02, transitionDelay: '0.2s' }}
+          >
+            <span style={{ color: '#fff', display: 'block' }}>Inteligência</span>
+            <span style={{ color: '#4a9eff', display: 'block', minHeight: '1.05em' }}>
+              {displayed}<span className="tw-cursor">|</span>
+            </span>
+            <span style={{ color: 'rgba(226,232,244,0.18)', display: 'block' }}>Estratégica.</span>
+          </h1>
+
+          {/* Sub */}
+          <p
+            className={`mb-12 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ color: 'rgba(226,232,244,0.38)', fontSize: 16, maxWidth: 480, lineHeight: 1.75, transitionDelay: '0.35s' }}
+          >
+            Conectamos empresas às melhores soluções do mercado financeiro.
+            25 anos de expertise, resultados mensuráveis.
+          </p>
+
+          {/* CTAs */}
+          <div
+            className={`flex flex-wrap gap-4 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '0.5s' }}
+          >
+            <button
+              onClick={onOpenModal}
+              className="nav-link group"
+              style={{ background: '#4a9eff', color: '#04070f', padding: '14px 32px', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', border: 'none', transition: 'all 0.3s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#6ab4ff'}
+              onMouseLeave={e => e.currentTarget.style.background = '#4a9eff'}
+            >
+              Iniciar Consulta →
+            </button>
+            <a
+              href="#solucoes"
+              className="nav-link"
+              style={{ border: '1px solid rgba(226,232,244,0.12)', color: 'rgba(226,232,244,0.4)', padding: '14px 32px', fontSize: 11, letterSpacing: '2px', textTransform: 'uppercase', transition: 'all 0.3s', textDecoration: 'none', display: 'inline-block' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(226,232,244,0.3)'; e.currentTarget.style.color = 'rgba(226,232,244,0.8)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(226,232,244,0.12)'; e.currentTarget.style.color = 'rgba(226,232,244,0.4)' }}
+            >
+              Ver Soluções
+            </a>
+          </div>
         </div>
 
-        <h1
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 leading-tight animate-slide-up"
-          style={{ animationDelay: '0.4s', opacity: 0, animationFillMode: 'forwards' }}
-        >
-          Hub de Inteligência
-        </h1>
-
+        {/* Scroll indicator */}
         <div
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-8 animate-slide-up"
-          style={{ animationDelay: '0.6s', opacity: 0, animationFillMode: 'forwards' }}
+          className={`absolute bottom-10 left-10 flex flex-col items-center gap-2 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}
+          style={{ transitionDelay: '1s' }}
         >
-          <span
-            className="text-ls-beige transition-all duration-400"
-            style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(10px)', display: 'inline-block', transition: 'opacity 0.4s, transform 0.4s' }}
-          >
-            {words[wordIndex]}
-          </span>
-          <span className="text-white">.</span>
-        </div>
-
-        <p
-          className="text-ls-beige/60 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed animate-slide-up"
-          style={{ animationDelay: '0.8s', opacity: 0, animationFillMode: 'forwards' }}
-        >
-          Conectamos empresas às melhores soluções do mercado financeiro.
-          25 anos de experiência, resultados reais.
-        </p>
-
-        <div
-          className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up"
-          style={{ animationDelay: '1s', opacity: 0, animationFillMode: 'forwards' }}
-        >
-          <button
-            onClick={onOpenModal}
-            className="bg-ls-beige text-ls-dark px-8 py-4 font-bold text-sm uppercase tracking-widest hover:bg-white transition-all duration-300 group"
-          >
-            Falar com Especialista
-            <span className="ml-2 group-hover:ml-3 transition-all duration-300">→</span>
-          </button>
-          <a
-            href="#solucoes"
-            className="border border-ls-beige/30 text-ls-beige px-8 py-4 font-semibold text-sm uppercase tracking-widest hover:border-ls-beige hover:bg-ls-beige/5 transition-all duration-300"
-          >
-            Ver Soluções
-          </a>
+          <div style={{ fontSize: 9, letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(74,158,255,0.35)', writingMode: 'vertical-rl' }}>scroll</div>
+          <div style={{ width: 1, height: 48, background: 'linear-gradient(to bottom, rgba(74,158,255,0.4), transparent)' }} />
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: '1.5s', opacity: 0, animationFillMode: 'forwards' }}>
-        <span className="text-ls-beige/30 text-xs uppercase tracking-widest">scroll</span>
-        <div className="w-px h-12 bg-gradient-to-b from-ls-beige/30 to-transparent"></div>
-      </div>
+      <div className="glow-line absolute bottom-0 left-0 right-0" />
     </section>
   )
 }

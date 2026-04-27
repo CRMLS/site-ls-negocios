@@ -6,69 +6,93 @@ export default function Navbar({ onOpenModal }: { onOpenModal: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled ? 'bg-ls-deep/98 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-transparent'
-    }`}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      style={{
+        background: scrolled ? 'rgba(4,7,15,0.95)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(74,158,255,0.08)' : '1px solid transparent',
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
 
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 group">
-          <img
-            src="/logo.png"
-            alt="LS Negócios"
-            className="h-14 w-auto"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-          />
-          <div className="leading-none">
-            <div className="font-display font-bold text-2xl text-white tracking-tight">LS NEGÓCIOS</div>
-            <div className="text-[10px] uppercase tracking-[3px] text-ls-beige/70 mt-0.5">Soluções Financeiras</div>
+        <a href="#" className="flex items-center gap-3 group nav-link">
+          <div
+            className="w-9 h-9 flex items-center justify-center transition-all duration-300 group-hover:bg-blue-500/10"
+            style={{ border: '1px solid rgba(74,158,255,0.3)', fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 13, color: '#4a9eff' }}
+          >
+            LS
+          </div>
+          <div>
+            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '1px' }}>LS NEGÓCIOS</div>
+            <div style={{ fontSize: 9, letterSpacing: '3px', color: 'rgba(74,158,255,0.5)', textTransform: 'uppercase' }}>Soluções Financeiras</div>
           </div>
         </a>
 
-        {/* Desktop Nav */}
+        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#solucoes" className="nav-link text-ls-beige/80 hover:text-ls-beige text-sm font-semibold uppercase tracking-wider transition-colors">
-            Soluções
-          </a>
-          <a href="#equipe" className="nav-link text-ls-beige/80 hover:text-ls-beige text-sm font-semibold uppercase tracking-wider transition-colors">
-            Equipe
-          </a>
-          <a href="#contato" className="nav-link text-ls-beige/80 hover:text-ls-beige text-sm font-semibold uppercase tracking-wider transition-colors">
-            Contato
-          </a>
+          {['Soluções', 'Equipe', 'Contato'].map(item => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="nav-link"
+              style={{ fontSize: 11, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(226,232,244,0.45)', transition: 'color 0.3s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#e2e8f4')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(226,232,244,0.45)')}
+            >
+              {item}
+            </a>
+          ))}
           <button
             onClick={onOpenModal}
-            className="border border-ls-beige text-ls-beige px-5 py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-ls-beige hover:text-ls-dark transition-all duration-300"
+            className="nav-link"
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(74,158,255,0.35)',
+              color: '#4a9eff',
+              padding: '9px 20px',
+              fontSize: 10,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              transition: 'all 0.3s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(74,158,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(74,158,255,0.7)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(74,158,255,0.35)' }}
           >
             Falar com Especialista
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-ls-beige p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          <div className={`w-6 h-px bg-ls-beige transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}></div>
-          <div className={`w-6 h-px bg-ls-beige my-1.5 transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`}></div>
-          <div className={`w-6 h-px bg-ls-beige transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`}></div>
+        {/* Mobile button */}
+        <button className="md:hidden flex flex-col gap-1.5 p-2 nav-link" onClick={() => setMenuOpen(!menuOpen)}>
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: '#4a9eff', transform: menuOpen ? 'rotate(45deg) translate(4px,4px)' : '' }} />
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: '#4a9eff', opacity: menuOpen ? 0 : 1 }} />
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: '#4a9eff', transform: menuOpen ? 'rotate(-45deg) translate(4px,-4px)' : '' }} />
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      <div className={`md:hidden bg-ls-deep border-t border-ls-beige/10 transition-all duration-300 overflow-hidden ${menuOpen ? 'max-h-80' : 'max-h-0'}`}>
-        <div className="px-6 py-4 flex flex-col gap-4">
-          <a href="#solucoes" className="text-ls-beige/80 text-sm font-semibold uppercase tracking-wider" onClick={() => setMenuOpen(false)}>Soluções</a>
-          <a href="#equipe" className="text-ls-beige/80 text-sm font-semibold uppercase tracking-wider" onClick={() => setMenuOpen(false)}>Equipe</a>
-          <a href="#contato" className="text-ls-beige/80 text-sm font-semibold uppercase tracking-wider" onClick={() => setMenuOpen(false)}>Contato</a>
-          <button onClick={() => { onOpenModal(); setMenuOpen(false) }} className="border border-ls-beige text-ls-beige py-3 text-xs font-bold uppercase tracking-widest mt-2">
+      {/* Mobile menu */}
+      <div
+        className="md:hidden overflow-hidden transition-all duration-400"
+        style={{ maxHeight: menuOpen ? '300px' : '0', borderTop: menuOpen ? '1px solid rgba(74,158,255,0.08)' : 'none' }}
+      >
+        <div className="px-6 py-6 flex flex-col gap-5" style={{ background: 'rgba(4,7,15,0.98)' }}>
+          {['Soluções', 'Equipe', 'Contato'].map(item => (
+            <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
+              style={{ fontSize: 11, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(226,232,244,0.5)' }}>
+              {item}
+            </a>
+          ))}
+          <button onClick={() => { onOpenModal(); setMenuOpen(false) }}
+            style={{ border: '1px solid rgba(74,158,255,0.3)', color: '#4a9eff', padding: '12px', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', background: 'transparent', marginTop: 8 }}>
             Falar com Especialista
           </button>
         </div>
