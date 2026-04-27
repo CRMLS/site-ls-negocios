@@ -1,111 +1,64 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 
-const solutions = [
-  { num: '01', title: 'Escritório Inteligente', sub: 'IA + Automação', items: ['Agentes de IA personalizados', 'Dashboard Power BI integrado', 'Automação com n8n', 'Relatórios em tempo real'], tag: 'Novo' },
-  { num: '02', title: 'Operações FIDC', sub: 'Antecipação de Recebíveis', items: ['Sacado Âncora', 'Folha Garantida', 'Operações estruturadas', 'Parceria Confiança FIDC'], tag: '25 anos' },
-  { num: '03', title: 'Hub de Benefícios', sub: 'Cartões Corporativos', items: ['Cartão alimentação e refeição', 'Cartão combustível', 'Consignado privado', 'Ponto digital Somapay'], tag: null },
-  { num: '04', title: 'Seguros & Proteção', sub: '+40 Seguradoras Parceiras', items: ['Auto, vida e residencial', 'Rural e agrícola', 'Frota e energia solar', 'Cyber Security'], tag: '+40' },
-  { num: '05', title: 'Financiamentos', sub: 'Veículos e Imóveis', items: ['Veículos leves e caminhões', 'Home Equity', 'Itaú, BV, PAN, Santander', 'Creditas e mais'], tag: null },
-  { num: '06', title: 'Consórcios', sub: 'Planejamento Patrimonial', items: ['Consórcio de imóveis', 'Consórcio de automóveis', 'Cartas contempladas', 'Planejamento patrimonial'], tag: null },
+const sols = [
+  { n:'01', title:'Escritório Inteligente', sub:'IA + Automação', tag:'Novo', items:['Agentes de IA personalizados','Dashboard Power BI','Automação com n8n','Relatórios em tempo real'] },
+  { n:'02', title:'Operações FIDC', sub:'Antecipação de Recebíveis', tag:'25 anos', items:['Sacado Âncora','Folha Garantida','Operações estruturadas','Confiança FIDC'] },
+  { n:'03', title:'Hub de Benefícios', sub:'Cartões Corporativos', tag:null, items:['Cartão alimentação','Cartão combustível','Consignado privado','Ponto digital'] },
+  { n:'04', title:'Seguros & Proteção', sub:'+40 Seguradoras', tag:'+40', items:['Auto, vida e residencial','Rural e agrícola','Frota e energia solar','Cyber Security'] },
+  { n:'05', title:'Financiamentos', sub:'Veículos e Imóveis', tag:null, items:['Veículos e caminhões','Home Equity','Itaú, BV, PAN, Santander','Creditas'] },
+  { n:'06', title:'Consórcios', sub:'Planejamento Patrimonial', tag:null, items:['Consórcio de imóveis','Consórcio de automóveis','Cartas contempladas','Planejamento patrimonial'] },
 ]
 
-function SolutionCard({ sol, index }: { sol: typeof solutions[0]; index: number }) {
-  const [open, setOpen] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = cardRef.current?.getBoundingClientRect()
-    if (!rect) return
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    cardRef.current?.style.setProperty('--mouse-x', x + 'px')
-    cardRef.current?.style.setProperty('--mouse-y', y + 'px')
-  }
-
-  return (
-    <div
-      ref={cardRef}
-      className="card-hover reveal"
-      onClick={() => setOpen(!open)}
-      onMouseMove={handleMouseMove}
-      style={{
-        background: '#04070f',
-        borderRight: (index % 3 !== 2) ? '1px solid rgba(74,158,255,0.06)' : 'none',
-        borderBottom: '1px solid rgba(74,158,255,0.06)',
-        padding: '32px 28px',
-        cursor: 'none',
-        transition: 'background 0.3s',
-        transitionDelay: `${index * 0.08}s`,
-      }}
-      onMouseEnter={e => e.currentTarget.style.background = '#070b14'}
-      onMouseLeave={e => e.currentTarget.style.background = '#04070f'}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-        <div>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgba(74,158,255,0.3)', marginBottom: 10, letterSpacing: '1px' }}>{sol.num}</div>
-          {sol.tag && (
-            <span style={{ fontSize: 9, letterSpacing: '2px', textTransform: 'uppercase', color: '#4a9eff', border: '1px solid rgba(74,158,255,0.2)', padding: '2px 8px', marginBottom: 10, display: 'inline-block' }}>
-              {sol.tag}
-            </span>
-          )}
-          <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700, color: '#e2e8f4', marginBottom: 4 }}>{sol.title}</div>
-          <div style={{ fontSize: 12, color: 'rgba(226,232,244,0.35)' }}>{sol.sub}</div>
-        </div>
-        <div style={{ fontSize: 20, color: open ? '#4a9eff' : 'rgba(74,158,255,0.2)', transition: 'all 0.3s', transform: open ? 'rotate(45deg)' : 'rotate(0deg)', marginTop: 4, flexShrink: 0 }}>+</div>
-      </div>
-
-      <div style={{ maxHeight: open ? '300px' : 0, overflow: 'hidden', transition: 'max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)' }}>
-        <div style={{ borderTop: '1px solid rgba(74,158,255,0.08)', paddingTop: 16 }}>
-          <ul style={{ listStyle: 'none' }}>
-            {sol.items.map((item, j) => (
-              <li key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 12, color: 'rgba(226,232,244,0.5)' }}>
-                <span style={{ color: 'rgba(74,158,255,0.4)', fontSize: 10 }}>→</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div style={{ position: 'absolute', bottom: 24, right: 24, fontSize: 16, color: 'rgba(74,158,255,0.15)', transition: 'all 0.3s' }}
-        onMouseEnter={e => e.currentTarget.style.color = 'rgba(74,158,255,0.5)'}
-        onMouseLeave={e => e.currentTarget.style.color = 'rgba(74,158,255,0.15)'}>
-        ↗
-      </div>
-    </div>
-  )
-}
-
 export default function Solutions() {
-  return (
-    <section id="solucoes" style={{ position: 'relative', zIndex: 2, paddingTop: 100, paddingBottom: 40 }}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="reveal" style={{ marginBottom: 56 }}>
-          <div className="section-tag">Portfólio de Soluções</div>
-          <h2 style={{ fontFamily: 'Syne, sans-serif', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 800, color: '#fff', marginBottom: 12 }}>
-            O que fazemos
-          </h2>
-          <p style={{ color: 'rgba(226,232,244,0.35)', fontSize: 14, maxWidth: 440 }}>
-            Clique em cada solução para ver os detalhes.
-          </p>
-        </div>
-      </div>
+  const [active, setActive] = useState<number|null>(null)
 
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            border: '1px solid rgba(74,158,255,0.06)',
-            position: 'relative',
-          }}
-        >
-          {solutions.map((sol, i) => (
-            <SolutionCard key={i} sol={sol} index={i} />
+  return (
+    <section id="solucoes" style={{ position:'relative', zIndex:2, padding:'100px 0 60px' }}>
+      <div style={{ maxWidth:1280, margin:'0 auto', padding:'0 40px' }}>
+        <div className="reveal" style={{ marginBottom:56 }}>
+          <div className="section-label">Portfólio de Soluções</div>
+          <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(28px,4vw,48px)', fontWeight:800, color:'#fff', marginBottom:12 }}>O que fazemos</h2>
+          <p style={{ color:'rgba(226,232,244,0.3)', fontSize:14 }}>Clique em cada solução para ver os detalhes.</p>
+        </div>
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', border:'1px solid rgba(74,158,255,0.06)' }}>
+          {sols.map((s, i) => (
+            <div key={i} className="card-light reveal"
+              style={{ background: active===i ? '#070b14' : '#04070f', borderRight:(i%3!==2)?'1px solid rgba(74,158,255,0.06)':'none', borderBottom:'1px solid rgba(74,158,255,0.06)', padding:'32px 28px', position:'relative', transition:'background 0.3s', transitionDelay:`${i*.08}s` }}
+              onClick={() => setActive(active===i ? null : i)}
+              onMouseMove={e => {
+                const r = e.currentTarget.getBoundingClientRect()
+                e.currentTarget.style.setProperty('--mx', (e.clientX-r.left)+'px')
+                e.currentTarget.style.setProperty('--my', (e.clientY-r.top)+'px')
+              }}
+              onMouseEnter={e => e.currentTarget.style.background='#070b14'}
+              onMouseLeave={e => e.currentTarget.style.background= active===i ? '#070b14' : '#04070f'}
+            >
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:18 }}>
+                <div>
+                  <div style={{ fontFamily:'monospace', fontSize:10, color:'rgba(74,158,255,0.3)', marginBottom:10, letterSpacing:1 }}>{s.n}</div>
+                  {s.tag && <span style={{ fontSize:9, letterSpacing:2, textTransform:'uppercase', color:'#4a9eff', border:'1px solid rgba(74,158,255,0.2)', padding:'2px 8px', display:'inline-block', marginBottom:10 }}>{s.tag}</span>}
+                  <div style={{ fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700, color:'#e2e8f4', marginBottom:4 }}>{s.title}</div>
+                  <div style={{ fontSize:12, color:'rgba(226,232,244,0.35)' }}>{s.sub}</div>
+                </div>
+                <div style={{ fontSize:20, color: active===i ? '#4a9eff' : 'rgba(74,158,255,0.2)', transition:'all 0.3s', transform: active===i ? 'rotate(45deg)' : 'none', flexShrink:0, marginTop:4 }}>+</div>
+              </div>
+
+              <div style={{ maxHeight: active===i ? 300 : 0, overflow:'hidden', transition:'max-height 0.5s ease' }}>
+                <div style={{ borderTop:'1px solid rgba(74,158,255,0.08)', paddingTop:16 }}>
+                  {s.items.map((item, j) => (
+                    <div key={j} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, fontSize:12, color:'rgba(226,232,244,0.45)' }}>
+                      <span style={{ color:'rgba(74,158,255,0.4)', fontSize:10 }}>→</span>{item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
+      <style>{`@media(max-width:900px){.sols-grid{grid-template-columns:repeat(2,1fr)!important}}@media(max-width:600px){.sols-grid{grid-template-columns:1fr!important}}`}</style>
     </section>
   )
 }

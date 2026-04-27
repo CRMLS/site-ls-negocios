@@ -4,7 +4,6 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'LS Negócios | Hub de Inteligência Financeira',
   description: 'Conectamos empresas às melhores soluções financeiras. FIDC, Seguros, Financiamentos, Consórcios. 25 anos de experiência em Mossoró-RN.',
-  keywords: 'FIDC, seguros, financiamentos, consórcios, Mossoró, soluções financeiras',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

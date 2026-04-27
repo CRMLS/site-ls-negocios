@@ -7,38 +7,40 @@ export default function Cursor() {
     const dot = document.getElementById('cursor-dot')
     if (!cursor || !dot) return
 
-    let mouseX = 0, mouseY = 0
-    let curX = 0, curY = 0
+    let mx = 0, my = 0, cx = 0, cy = 0
 
-    const move = (e: MouseEvent) => {
-      mouseX = e.clientX
-      mouseY = e.clientY
-      dot.style.left = mouseX + 'px'
-      dot.style.top = mouseY + 'px'
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY
+      dot.style.left = mx + 'px'
+      dot.style.top = my + 'px'
     }
 
-    const animate = () => {
-      curX += (mouseX - curX) * 0.12
-      curY += (mouseY - curY) * 0.12
-      cursor.style.left = curX + 'px'
-      cursor.style.top = curY + 'px'
-      requestAnimationFrame(animate)
+    const tick = () => {
+      cx += (mx - cx) * 0.12
+      cy += (my - cy) * 0.12
+      cursor.style.left = cx + 'px'
+      cursor.style.top = cy + 'px'
+      requestAnimationFrame(tick)
     }
-    animate()
+    tick()
 
-    const addHover = () => cursor.classList.add('hovering')
-    const removeHover = () => cursor.classList.remove('hovering')
+    document.addEventListener('mousemove', onMove)
 
-    document.addEventListener('mousemove', move)
+    const over = () => cursor.classList.add('hovering')
+    const out = () => cursor.classList.remove('hovering')
 
-    const hoverEls = document.querySelectorAll('a, button, .card-hover, .nav-link')
-    hoverEls.forEach(el => {
-      el.addEventListener('mouseenter', addHover)
-      el.addEventListener('mouseleave', removeHover)
-    })
+    const timer = setInterval(() => {
+      document.querySelectorAll('a,button,.card-light').forEach(el => {
+        el.removeEventListener('mouseenter', over)
+        el.removeEventListener('mouseleave', out)
+        el.addEventListener('mouseenter', over)
+        el.addEventListener('mouseleave', out)
+      })
+    }, 1000)
 
     return () => {
-      document.removeEventListener('mousemove', move)
+      document.removeEventListener('mousemove', onMove)
+      clearInterval(timer)
     }
   }, [])
 

@@ -5,37 +5,27 @@ import Particles from '@/components/Particles'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
-import Partners from '@/components/Partners'
 import Solutions from '@/components/Solutions'
-import Team from '@/components/Team'
-import Contact from '@/components/Contact'
-import { Modal, WhatsAppFloat, Footer } from '@/components/UI'
+import { Team, Partners, Contact, Footer, Modal, WhatsAppFloat } from '@/components/Sections'
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false)
+  const [modal, setModal] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible')
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
-    return () => observer.disconnect()
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+    return () => obs.disconnect()
   }, [])
 
   return (
     <>
       <Cursor />
       <Particles />
-      <Navbar onOpenModal={() => setModalOpen(true)} />
+      <Navbar onModal={() => setModal(true)} />
       <main>
-        <Hero onOpenModal={() => setModalOpen(true)} />
+        <Hero onModal={() => setModal(true)} />
         <Stats />
         <Partners />
         <Solutions />
@@ -43,8 +33,8 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-      <WhatsAppFloat onClick={() => setModalOpen(true)} />
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <WhatsAppFloat onClick={() => setModal(true)} />
+      <Modal open={modal} onClose={() => setModal(false)} />
     </>
   )
 }
