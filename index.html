@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LS Negócios | Hub de Inteligência Financeira</title>
+  <meta name="description" content="Conectamos empresas às melhores soluções financeiras. FIDC, Seguros, Financiamentos, Consórcios. 25 anos de experiência em Mossoró-RN.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ─── RESET & BASE ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue: #4a9eff;
+      --blue-glow: rgba(74,158,255,0.15);
+      --bg: #04070f;
+      --bg2: #070b14;
+      --text: #e2e8f4;
+      --text-dim: rgba(226,232,244,0.4);
+      --text-faint: rgba(226,232,244,0.15);
+      --border: rgba(74,158,255,0.1);
+    }
+
+    html { scroll-behavior: smooth; cursor: none; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+
+    a, button { cursor: none; }
+
+    /* ─── CURSOR ─── */
+    #cursor {
+      position: fixed;
+      width: 20px; height: 20px;
+      border: 1px solid rgba(74,158,255,0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .25s, height .25s, background .25s, border-color .25s;
+      mix-blend-mode: screen;
+    }
+    #cursor.big { width: 48px; height: 48px; background: rgba(74,158,255,0.05); border-color: rgba(74,158,255,0.9); }
+    #cursor-dot {
+      position: fixed;
+      width: 4px; height: 4px;
+      background: var(--blue);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%,-50%);
+    }
+
+    /* ─── PARTICLES ─── */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: .7;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .4s, border-color .4s, backdrop-filter .4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(4,7,15,0.96);
+      backdrop-filter: blur(20px);
+      border-color: var(--border);
+    }
+
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo-box {
+      width: 38px; height: 38px;
+      border: 1px solid rgba(74,158,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 13px; color: var(--blue);
+      transition: background .3s;
+    }
+    .logo:hover .logo-box { background: rgba(74,158,255,0.08); }
+    .logo-text { line-height: 1.2; }
+    .logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #fff; letter-spacing: 1px; }
+    .logo-sub { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(74,158,255,0.5); }
+
+    .nav-links { display: flex; align-items: center; gap: 36px; }
+    .nav-links a {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text-dim); text-decoration: none;
+      transition: color .3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--blue);
+      transform: scaleX(0); transition: transform .3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      border: 1px solid rgba(74,158,255,0.35);
+      color: var(--blue);
+      padding: 9px 20px;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      background: transparent;
+      transition: all .3s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .nav-cta:hover { background: rgba(74,158,255,0.1); border-color: rgba(74,158,255,0.7); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(74,158,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,158,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 20%; right: 15%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(74,158,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content { max-width: 1280px; margin: 0 auto; padding: 140px 60px 80px; width: 100%; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center; gap: 10px;
+      border: 1px solid rgba(74,158,255,0.2);
+      padding: 7px 16px;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(74,158,255,0.7);
+      margin-bottom: 40px;
+      opacity: 0;
+    }
+    .pulse { width: 6px; height: 6px; background: var(--blue); border-radius: 50%; animation: pulse 2s infinite; display: inline-block; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
+
+    .hero-h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(44px, 7.5vw, 92px);
+      line-height: 1.02;
+      margin-bottom: 28px;
+      opacity: 0;
+    }
+    .hero-h1 .line1 { display: block; color: #fff; }
+    .hero-h1 .line2 { display: block; color: var(--blue); min-height: 1.05em; }
+    .hero-h1 .line3 { display: block; color: rgba(226,232,244,0.12); }
+    .tw-cursor { animation: blink .8s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .hero-sub {
+      color: var(--text-dim);
+      font-size: 16px; max-width: 480px;
+      line-height: 1.8; margin-bottom: 48px;
+      opacity: 0;
+    }
+
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; }
+    .btn-primary {
+      background: var(--blue); color: var(--bg);
+      padding: 14px 32px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      border: none; transition: background .3s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary:hover { background: #6ab4ff; }
+    .btn-ghost {
+      border: 1px solid rgba(226,232,244,0.12);
+      color: var(--text-dim);
+      padding: 14px 32px;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      background: transparent; transition: all .3s;
+      text-decoration: none; display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-ghost:hover { border-color: rgba(226,232,244,0.35); color: var(--text); }
+
+    .scroll-hint {
+      position: absolute; bottom: 40px; left: 60px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0;
+    }
+    .scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(74,158,255,0.3); writing-mode: vertical-rl; }
+    .scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(74,158,255,0.4), transparent); }
+
+    .hero-divider { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: .2; }
+
+    /* ─── STATS ─── */
+    #stats {
+      position: relative; z-index: 1;
+      background: rgba(7,11,20,0.8);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
+    .stat-item { padding: 44px 32px; border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px,4vw,56px);
+      font-weight: 800; color: var(--blue);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-label { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 8px; }
+    .stat-desc { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+
+    /* ─── PARTNERS ─── */
+    #partners {
+      position: relative; z-index: 1;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .partners-fade-l { position: absolute; left: 0; top: 0; bottom: 0; width: 120px; background: linear-gradient(to right, var(--bg), transparent); z-index: 1; pointer-events: none; }
+    .partners-fade-r { position: absolute; right: 0; top: 0; bottom: 0; width: 120px; background: linear-gradient(to left, var(--bg), transparent); z-index: 1; pointer-events: none; }
+    .partners-track { display: flex; animation: slide 30s linear infinite; }
+    .partner-item { width: 180px; display: flex; align-items: center; justify-content: center; padding: 0 24px; flex-shrink: 0; }
+    .partner-item img { height: 24px; width: auto; object-fit: contain; filter: grayscale(100%) brightness(.35); transition: filter .3s; }
+    .partner-item img:hover { filter: grayscale(0%) brightness(.85); }
+    @keyframes slide { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header { margin-bottom: 56px; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 16px;
+    }
+    .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--blue); }
+    .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px,4vw,48px); font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .section-sub { color: var(--text-faint); font-size: 14px; max-width: 440px; }
+
+    /* ─── SOLUTIONS ─── */
+    #solutions { position: relative; z-index: 1; padding: 100px 0 60px; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 60px; }
+
+    .sols-grid { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border); }
+    .sol-card {
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+    }
+    .sol-card:nth-child(3n) { border-right: none; }
+    .sol-card:hover { background: var(--bg2); }
+
+    .sol-card::after {
+      content: ''; position: absolute;
+      top: var(--my, 50%); left: var(--mx, 50%);
+      width: 0; height: 0;
+      background: radial-gradient(circle, rgba(74,158,255,0.07) 0%, transparent 65%);
+      transform: translate(-50%,-50%);
+      transition: width .5s, height .5s;
+      border-radius: 50%; pointer-events: none;
+    }
+    .sol-card:hover::after { width: 400px; height: 400px; }
+
+    .sol-num { font-family: monospace; font-size: 10px; color: rgba(74,158,255,0.3); margin-bottom: 12px; letter-spacing: 1px; }
+    .sol-tag { display: inline-block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); border: 1px solid rgba(74,158,255,0.2); padding: 2px 8px; margin-bottom: 12px; }
+    .sol-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .sol-sub { font-size: 12px; color: rgba(226,232,244,0.35); margin-bottom: 20px; }
+
+    .sol-toggle {
+      position: absolute; top: 28px; right: 24px;
+      font-size: 22px; color: rgba(74,158,255,0.2);
+      transition: all .3s; background: none; border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .sol-card.open .sol-toggle { color: var(--blue); transform: rotate(45deg); }
+
+    .sol-items { max-height: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.25,.46,.45,.94); }
+    .sol-card.open .sol-items { max-height: 300px; }
+    .sol-items-inner { border-top: 1px solid var(--border); padding-top: 16px; }
+    .sol-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(226,232,244,0.45); margin-bottom: 10px; }
+    .sol-item::before { content: '→'; color: rgba(74,158,255,0.4); font-size: 10px; flex-shrink: 0; }
+
+    .sol-arrow { position: absolute; bottom: 20px; right: 20px; font-size: 14px; color: rgba(74,158,255,0.12); transition: all .3s; }
+    .sol-card:hover .sol-arrow { color: rgba(74,158,255,0.5); transform: translate(2px,-2px); }
+
+    /* ─── TEAM ─── */
+    #team { position: relative; z-index: 1; padding: 100px 0; background: rgba(7,11,20,0.4); }
+    .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); }
+    .team-card {
+      background: var(--bg);
+      padding: 44px 36px;
+      position: relative; overflow: hidden;
+      transition: background .3s;
+    }
+    .team-card::after {
+      content: ''; position: absolute;
+      top: var(--my, 50%); left: var(--mx, 50%);
+      width: 0; height: 0;
+      background: radial-gradient(circle, rgba(74,158,255,0.06) 0%, transparent 65%);
+      transform: translate(-50%,-50%);
+      transition: width .5s, height .5s;
+      border-radius: 50%; pointer-events: none;
+    }
+    .team-card:hover::after { width: 400px; height: 400px; }
+    .team-avatar {
+      width: 56px; height: 56px;
+      border: 1px solid rgba(74,158,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--blue);
+      margin-bottom: 28px; transition: all .3s;
+    }
+    .team-card:hover .team-avatar { border-color: rgba(74,158,255,0.5); background: rgba(74,158,255,0.05); }
+    .team-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .team-role { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+    .team-bio { font-size: 13px; color: rgba(226,232,244,0.35); line-height: 1.7; margin-bottom: 32px; }
+    .team-wa {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(74,158,255,0.4); text-decoration: none;
+      transition: color .3s;
+    }
+    .team-wa:hover { color: var(--blue); }
+    .team-wa svg { width: 14px; height: 14px; }
+
+    /* ─── CONTACT ─── */
+    #contact { position: relative; z-index: 1; padding: 100px 0; border-top: 1px solid var(--border); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .contact-info h2 { font-family: 'Syne', sans-serif; font-size: clamp(28px,4vw,48px); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+    .contact-info p { color: var(--text-dim); font-size: 14px; line-height: 1.8; margin-bottom: 40px; max-width: 340px; }
+    .contact-detail { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(226,232,244,0.35); margin-bottom: 14px; }
+    .contact-detail span { color: rgba(74,158,255,0.5); }
+
+    .contact-form { display: flex; flex-direction: column; gap: 12px; }
+    .ls-input {
+      width: 100%; background: rgba(74,158,255,0.03);
+      border: 1px solid rgba(74,158,255,0.12);
+      color: var(--text); padding: 14px 16px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color .3s;
+    }
+    .ls-input::placeholder { color: rgba(226,232,244,0.25); }
+    .ls-input:focus { border-color: rgba(74,158,255,0.4); }
+    .ls-input option { background: var(--bg); }
+
+    .btn-submit {
+      background: var(--blue); color: var(--bg);
+      padding: 16px; border: none;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      transition: background .3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: 'DM Sans', sans-serif; width: 100%;
+    }
+    .btn-submit:hover { background: #6ab4ff; }
+    .btn-submit svg { width: 15px; height: 15px; }
+    .form-note { text-align: center; font-size: 11px; color: rgba(226,232,244,0.18); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative; z-index: 1;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 32px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #fff; letter-spacing: 1px; margin-bottom: 4px; }
+    .footer-brand-sub { font-size: 9px; letter-spacing: 3px; color: rgba(74,158,255,0.4); text-transform: uppercase; margin-bottom: 16px; }
+    .footer-desc { font-size: 13px; color: rgba(226,232,244,0.22); line-height: 1.7; max-width: 280px; }
+    .footer-col-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(74,158,255,0.5); margin-bottom: 20px; }
+    .footer-link { display: block; font-size: 13px; color: rgba(226,232,244,0.22); text-decoration: none; margin-bottom: 10px; transition: color .3s; }
+    .footer-link:hover { color: rgba(226,232,244,0.7); }
+    .footer-text { font-size: 13px; color: rgba(226,232,244,0.22); margin-bottom: 8px; }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 11px; color: rgba(226,232,244,0.15); }
+    .footer-version { font-family: monospace; font-size: 10px; color: rgba(74,158,255,0.2); }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(12px);
+      display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--bg2);
+      border: 1px solid rgba(74,158,255,0.2);
+      padding: 44px 40px;
+      max-width: 420px; width: 100%;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; color: rgba(226,232,244,0.3);
+      font-size: 20px; transition: color .3s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-tag { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: rgba(226,232,244,0.35); margin-bottom: 28px; }
+    .modal-options { display: flex; flex-direction: column; gap: 10px; }
+    .modal-opt {
+      display: flex; align-items: center; gap: 14px;
+      border: 1px solid rgba(74,158,255,0.1);
+      padding: 16px 18px; text-decoration: none;
+      transition: all .3s;
+    }
+    .modal-opt:hover { border-color: rgba(74,158,255,0.4); background: rgba(74,158,255,0.04); }
+    .modal-avatar {
+      width: 38px; height: 38px;
+      border: 1px solid rgba(74,158,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--blue);
+      flex-shrink: 0;
+    }
+    .modal-opt-name { font-weight: 600; font-size: 14px; color: var(--text); }
+    .modal-opt-role { font-size: 11px; color: rgba(226,232,244,0.35); }
+    .modal-wa { margin-left: auto; flex-shrink: 0; }
+    .modal-wa svg { width: 18px; height: 18px; }
+
+    /* ─── WHATSAPP FLOAT ─── */
+    .wa-float {
+      position: fixed; bottom: 32px; right: 32px; z-index: 40;
+      width: 54px; height: 54px; border-radius: 50%;
+      background: #25d366; border: none;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.25);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .wa-float:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.4); }
+    .wa-float svg { width: 28px; height: 28px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      nav { padding: 18px 32px; }
+      .hero-content, .container, footer .container { padding-left: 32px; padding-right: 32px; }
+      .contact-grid { gap: 48px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .sols-grid { grid-template-columns: 1fr; }
+      .sol-card:nth-child(3n) { border-right: 1px solid var(--border); }
+      .team-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-content { padding: 120px 32px 60px; }
+      .scroll-hint { left: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#" class="logo">
+    <div class="logo-box">LS</div>
+    <div class="logo-text">
+      <div class="logo-name">LS NEGÓCIOS</div>
+      <div class="logo-sub">Soluções Financeiras</div>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#solutions">Soluções</a>
+    <a href="#team">Equipe</a>
+    <a href="#contact">Contato</a>
+    <button class="nav-cta" onclick="openModal()">Falar com Especialista</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="pulse"></span> Hub Financeiro · Mossoró · RN · Brasil</div>
+    <h1 class="hero-h1">
+      <span class="line1">Inteligência</span>
+      <span class="line2" id="typewriter"><span class="tw-cursor">|</span></span>
+      <span class="line3">Estratégica.</span>
+    </h1>
+    <p class="hero-sub">Conectamos empresas às melhores soluções do mercado financeiro. 25 anos de expertise, resultados mensuráveis.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="openModal()">Iniciar Consulta →</button>
+      <a href="#solutions" class="btn-ghost">Ver Soluções</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+  <div class="hero-divider"></div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-num" data-target="25" data-suffix="+">0+</div>
+      <div class="stat-label">Anos de Mercado</div>
+      <div class="stat-desc">FIDC e soluções financeiras</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="40" data-suffix="+">0+</div>
+      <div class="stat-label">Seguradoras</div>
+      <div class="stat-desc">Parceiras ativas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="500" data-suffix="+">0+</div>
+      <div class="stat-label">Clientes</div>
+      <div class="stat-desc">Empresas atendidas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="8" data-suffix="+">0+</div>
+      <div class="stat-label">Soluções</div>
+      <div class="stat-desc">Linhas de produto</div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <div class="partners-fade-l"></div>
+  <div class="partners-fade-r"></div>
+  <div class="partners-track" id="partnersTrack">
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2014/05/itau-logo-7.png" alt="Itaú"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2018/01/porto-seguro-logo.png" alt="Porto Seguro"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2019/07/creditas-logo.png" alt="Creditas"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2014/09/banco-safra-logo.png" alt="Safra"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2016/09/santander-logo-4.png" alt="Santander"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2018/05/rodobens-logo.png" alt="Rodobens"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2014/05/itau-logo-7.png" alt="Itaú"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2018/01/porto-seguro-logo.png" alt="Porto Seguro"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2019/07/creditas-logo.png" alt="Creditas"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2014/09/banco-safra-logo.png" alt="Safra"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2016/09/santander-logo-4.png" alt="Santander"></div>
+    <div class="partner-item"><img src="https://logodownload.org/wp-content/uploads/2018/05/rodobens-logo.png" alt="Rodobens"></div>
+  </div>
+</section>
+
+<!-- SOLUTIONS -->
+<section id="solutions">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Portfólio de Soluções</div>
+      <h2 class="section-title">O que fazemos</h2>
+      <p class="section-sub">Clique em cada solução para ver os detalhes.</p>
+    </div>
+    <div class="sols-grid">
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">01</div>
+        <span class="sol-tag">Novo</span>
+        <div class="sol-title">Escritório Inteligente</div>
+        <div class="sol-sub">IA + Automação</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Agentes de IA personalizados</div>
+          <div class="sol-item">Dashboard Power BI integrado</div>
+          <div class="sol-item">Automação com n8n</div>
+          <div class="sol-item">Relatórios em tempo real</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">02</div>
+        <span class="sol-tag">25 anos</span>
+        <div class="sol-title">Operações FIDC</div>
+        <div class="sol-sub">Antecipação de Recebíveis</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Sacado Âncora</div>
+          <div class="sol-item">Folha Garantida</div>
+          <div class="sol-item">Operações estruturadas</div>
+          <div class="sol-item">Confiança FIDC</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">03</div>
+        <div class="sol-title">Hub de Benefícios</div>
+        <div class="sol-sub">Cartões Corporativos</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Cartão alimentação e refeição</div>
+          <div class="sol-item">Cartão combustível</div>
+          <div class="sol-item">Consignado privado</div>
+          <div class="sol-item">Ponto digital Somapay</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">04</div>
+        <span class="sol-tag">+40</span>
+        <div class="sol-title">Seguros & Proteção</div>
+        <div class="sol-sub">+40 Seguradoras Parceiras</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Auto, vida e residencial</div>
+          <div class="sol-item">Rural e agrícola</div>
+          <div class="sol-item">Frota e energia solar</div>
+          <div class="sol-item">Cyber Security</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">05</div>
+        <div class="sol-title">Financiamentos</div>
+        <div class="sol-sub">Veículos e Imóveis</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Veículos leves e caminhões</div>
+          <div class="sol-item">Home Equity</div>
+          <div class="sol-item">Itaú, BV, PAN, Santander</div>
+          <div class="sol-item">Creditas</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+      <div class="sol-card" onclick="toggleSol(this)">
+        <div class="sol-num">06</div>
+        <div class="sol-title">Consórcios</div>
+        <div class="sol-sub">Planejamento Patrimonial</div>
+        <button class="sol-toggle">+</button>
+        <div class="sol-items"><div class="sol-items-inner">
+          <div class="sol-item">Consórcio de imóveis</div>
+          <div class="sol-item">Consórcio de automóveis</div>
+          <div class="sol-item">Cartas contempladas</div>
+          <div class="sol-item">Planejamento patrimonial</div>
+        </div></div>
+        <div class="sol-arrow">↗</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Nossa Equipe</div>
+      <h2 class="section-title">Quem somos</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">SC</div>
+        <div class="team-name">Sérgio Costa</div>
+        <div class="team-role">Sócio Fundador</div>
+        <p class="team-bio">25 anos de experiência em FIDC e mercado financeiro.</p>
+        <a href="https://wa.me/5584996570880?text=Olá, Sérgio Costa. Vim pelo site da LS Negócios." target="_blank" class="team-wa">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp →
+        </a>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">LP</div>
+        <div class="team-name">Leonardo Pereira</div>
+        <div class="team-role">Sócio Fundador</div>
+        <p class="team-bio">10 anos em soluções financeiras e benefícios corporativos.</p>
+        <a href="https://wa.me/5584994095409?text=Olá, Leonardo Pereira. Vim pelo site da LS Negócios." target="_blank" class="team-wa">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp →
+        </a>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">PM</div>
+        <div class="team-name">Paulo Mesquita</div>
+        <div class="team-role">Consultor Especialista</div>
+        <p class="team-bio">Especialista em seguros, financiamentos e consórcios.</p>
+        <a href="https://wa.me/5584987458834?text=Olá, Paulo Mesquita. Vim pelo site da LS Negócios." target="_blank" class="team-wa">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="section-label">Vamos conversar</div>
+        <h2>Entre em<br>Contato</h2>
+        <p>Preencha o formulário e um especialista entra em contato via WhatsApp com a melhor solução para o seu negócio.</p>
+        <div class="contact-detail"><span>✉</span> lsnegocio@lsnegocio.com.br</div>
+        <div class="contact-detail"><span>◎</span> Mossoró · RN · Brasil</div>
+        <div class="contact-detail"><span>◈</span> Segunda a sexta, 8h–18h</div>
+      </div>
+      <form class="contact-form" onsubmit="submitForm(event)">
+        <input type="text" placeholder="Seu nome completo *" class="ls-input" id="f-name" required>
+        <input type="tel" placeholder="Telefone / WhatsApp *" class="ls-input" id="f-phone" required>
+        <select class="ls-input" id="f-interest" required>
+          <option value="" disabled selected>Qual solução te interessa? *</option>
+          <option>Escritório Inteligente (IA)</option>
+          <option>Operações FIDC</option>
+          <option>Hub de Benefícios</option>
+          <option>Seguros & Proteção</option>
+          <option>Financiamentos</option>
+          <option>Consórcios</option>
+          <option>Outro assunto</option>
+        </select>
+        <textarea placeholder="Mensagem (opcional)" class="ls-input" id="f-msg" rows="4" style="resize:none"></textarea>
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Enviar pelo WhatsApp →
+        </button>
+        <p class="form-note">Ao enviar, o WhatsApp abre com sua mensagem formatada.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">LS NEGÓCIOS</div>
+        <div class="footer-brand-sub">Soluções Financeiras</div>
+        <p class="footer-desc">25 anos conectando empresas às melhores soluções financeiras. Mossoró — RN.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navegação</div>
+        <a href="#solutions" class="footer-link">Soluções</a>
+        <a href="#team" class="footer-link">Equipe</a>
+        <a href="#contact" class="footer-link">Contato</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Contato</div>
+        <p class="footer-text">lsnegocio@lsnegocio.com.br</p>
+        <p class="footer-text">Mossoró · RN · Brasil</p>
+        <p class="footer-text">Seg–Sex, 8h–18h</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 LS Negócios. Todos os direitos reservados.</span>
+      <span class="footer-version">v4.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-tag">Fale conosco</div>
+    <h3 class="modal-title">Escolha um Especialista</h3>
+    <p class="modal-sub">Clique para abrir o WhatsApp diretamente.</p>
+    <div class="modal-options">
+      <a href="https://wa.me/5584996570880?text=Olá, Sérgio Costa. Vim pelo site da LS Negócios." target="_blank" class="modal-opt">
+        <div class="modal-avatar">SC</div>
+        <div><div class="modal-opt-name">Sérgio Costa</div><div class="modal-opt-role">Sócio Fundador</div></div>
+        <div class="modal-wa"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+      </a>
+      <a href="https://wa.me/5584994095409?text=Olá, Leonardo Pereira. Vim pelo site da LS Negócios." target="_blank" class="modal-opt">
+        <div class="modal-avatar">LP</div>
+        <div><div class="modal-opt-name">Leonardo Pereira</div><div class="modal-opt-role">Sócio Fundador</div></div>
+        <div class="modal-wa"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+      </a>
+      <a href="https://wa.me/5584987458834?text=Olá, Paulo Mesquita. Vim pelo site da LS Negócios." target="_blank" class="modal-opt">
+        <div class="modal-avatar">PM</div>
+        <div><div class="modal-opt-name">Paulo Mesquita</div><div class="modal-opt-role">Consultor Especialista</div></div>
+        <div class="modal-wa"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP FLOAT -->
+<button class="wa-float" onclick="openModal()">
+  <svg viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</button>
+
+<script>
+// ─── CURSOR ───
+const cursor = document.getElementById('cursor')
+const dot = document.getElementById('cursor-dot')
+let mx = 0, my = 0, cx = 0, cy = 0
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px'
+})
+
+;(function tick() {
+  cx += (mx - cx) * .12; cy += (my - cy) * .12
+  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px'
+  requestAnimationFrame(tick)
+})()
+
+document.querySelectorAll('a,button,.sol-card,.team-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('big'))
+  el.addEventListener('mouseleave', () => cursor.classList.remove('big'))
+})
+
+// ─── PARTICLES ───
+const canvas = document.getElementById('particles')
+const ctx = canvas.getContext('2d')
+let W, H, pmx = 0, pmy = 0
+
+function resizeCanvas() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas)
+
+const pts = Array.from({length: 80}, () => ({
+  x: Math.random() * 1920, y: Math.random() * 1080,
+  vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+  r: Math.random()*1.2+.3, a: Math.random()*.28+.07
+}))
+
+document.addEventListener('mousemove', e => { pmx = e.clientX; pmy = e.clientY })
+
+;(function drawParticles() {
+  ctx.clearRect(0,0,W,H)
+  pts.forEach(p => {
+    const dx = pmx-p.x, dy = pmy-p.y, d = Math.sqrt(dx*dx+dy*dy)
+    if(d < 130) { p.vx -= dx*.00015; p.vy -= dy*.00015 }
+    p.x += p.vx; p.y += p.vy; p.vx *= .999; p.vy *= .999
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+    ctx.fillStyle=`rgba(74,158,255,${p.a})`; ctx.fill()
+  })
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) {
+    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy)
+    if(d<110){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y)
+      ctx.strokeStyle=`rgba(74,158,255,${.07*(1-d/110)})`; ctx.lineWidth=.5; ctx.stroke() }
+  }
+  requestAnimationFrame(drawParticles)
+})()
+
+// ─── NAVBAR ───
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50)
+})
+
+// ─── TYPEWRITER ───
+const words = ['Financeira','Estratégica','Empresarial','Inovadora']
+let wi=0, ci=0, del=false
+const tw = document.getElementById('typewriter')
+
+function typeWriter() {
+  const word = words[wi]
+  if(!del) {
+    tw.innerHTML = word.slice(0,ci+1) + '<span class="tw-cursor">|</span>'
+    ci++
+    if(ci===word.length) { del=true; setTimeout(typeWriter,1800); return }
+    setTimeout(typeWriter, 85)
+  } else {
+    tw.innerHTML = word.slice(0,ci-1) + '<span class="tw-cursor">|</span>'
+    ci--
+    if(ci===0) { del=false; wi=(wi+1)%words.length; setTimeout(typeWriter,400); return }
+    setTimeout(typeWriter, 45)
+  }
+}
+typeWriter()
+
+// ─── GSAP ANIMATIONS ───
+gsap.registerPlugin(ScrollTrigger)
+
+// Hero entrance
+gsap.to('.hero-badge', { opacity:1, y:0, duration:.8, delay:.2, ease:'power2.out' })
+gsap.to('.hero-h1', { opacity:1, y:0, duration:.9, delay:.4, ease:'power2.out' })
+gsap.to('.hero-sub', { opacity:1, y:0, duration:.9, delay:.6, ease:'power2.out' })
+gsap.to('.hero-btns', { opacity:1, y:0, duration:.9, delay:.8, ease:'power2.out' })
+gsap.to('.scroll-hint', { opacity:1, duration:1, delay:1.4, ease:'power2.out' })
+
+// Stats counter
+document.querySelectorAll('[data-target]').forEach(el => {
+  const target = parseInt(el.dataset.target)
+  const suffix = el.dataset.suffix
+  ScrollTrigger.create({
+    trigger: el, start: 'top 80%', once: true,
+    onEnter: () => {
+      gsap.to({val:0}, {
+        val: target, duration: 2, ease: 'power2.out',
+        onUpdate: function() { el.textContent = Math.floor(this.targets()[0].val) + suffix }
+      })
+    }
+  })
+})
+
+// Section reveals
+gsap.utils.toArray('.section-header, .sol-card, .team-card, .contact-info, .contact-form').forEach((el, i) => {
+  gsap.fromTo(el,
+    { opacity:0, y:40 },
+    { opacity:1, y:0, duration:.9, ease:'power2.out', delay: (i % 3) * .1,
+      scrollTrigger: { trigger:el, start:'top 82%', once:true } }
+  )
+})
+
+// ─── CARD LIGHT EFFECT ───
+document.querySelectorAll('.sol-card, .team-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect()
+    card.style.setProperty('--mx', (e.clientX-r.left)+'px')
+    card.style.setProperty('--my', (e.clientY-r.top)+'px')
+  })
+})
+
+// ─── SOLUTIONS TOGGLE ───
+function toggleSol(card) {
+  document.querySelectorAll('.sol-card.open').forEach(c => { if(c!==card) c.classList.remove('open') })
+  card.classList.toggle('open')
+}
+
+// ─── MODAL ───
+function openModal() { document.getElementById('modal').classList.add('active') }
+function closeModal() { document.getElementById('modal').classList.remove('active') }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal() })
+
+// ─── FORM ───
+function submitForm(e) {
+  e.preventDefault()
+  const name = document.getElementById('f-name').value
+  const phone = document.getElementById('f-phone').value
+  const interest = document.getElementById('f-interest').value
+  const msg = document.getElementById('f-msg').value
+  const text = `Olá! Me chamo *${name}*.\n\nInteresse: *${interest}*\nTelefone: ${phone}${msg?`\n\nMensagem: ${msg}`:''}\n\n_Vim pelo site da LS Negócios._`
+  window.open(`https://wa.me/5584996570880?text=${encodeURIComponent(text)}`, '_blank')
+  const btn = document.getElementById('submit-btn')
+  btn.textContent = 'WhatsApp aberto! ✓'
+  btn.style.background = 'rgba(74,158,255,0.1)'
+  btn.style.color = '#4a9eff'
+  setTimeout(() => {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Enviar pelo WhatsApp →'
+    btn.style.background = '#4a9eff'
+    btn.style.color = '#04070f'
+  }, 4000)
+}
+</script>
+</body>
+</html>
